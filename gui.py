@@ -13,7 +13,7 @@ import gettext
 
 # begin wxGlade: extracode
 # end wxGlade
-
+#adding comment for permissions check
 
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
