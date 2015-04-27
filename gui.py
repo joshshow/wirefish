@@ -7,6 +7,7 @@
 import wx
 import socket, sys
 from struct import *
+import binascii
 # begin wxGlade: dependencies
 import gettext
 # end wxGlade
@@ -86,8 +87,8 @@ class MyFrame(wx.Frame):
              
             #get data from the packet
             data = packet[h_size:]
-             
-            self.listbox.Append('Data : ' + data)
+            string_data = binascii.b2a_uu(data)
+            self.listbox.Append('Data : ' + string_data)
             self.listbox.Append(' ')
 
     def __set_properties(self):
