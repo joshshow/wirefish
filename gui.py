@@ -7,14 +7,17 @@
 import wx
 import socket, sys
 from struct import *
-import binascii
+from scapy.all import *
+from StringIO import StringIO
+
+
 # begin wxGlade: dependencies
 import gettext
 # end wxGlade
 
 # begin wxGlade: extracode
 # end wxGlade
-#adding comment for permissions check
+
 
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -33,63 +36,17 @@ class MyFrame(wx.Frame):
         
     
     def startAnalyzer(self):
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
-        except socket.error , msg:
-            print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
-            sys.exit()
- 
-    # receive a packet
-        while True:
-            packet = s.recvfrom(65565)
-             
-            #packet string from tuple
-            packet = packet[0]
-             
-            #take first 20 characters for the ip header
-            ip_header = packet[0:20]
-             
-            #now unpack them :)
-            iph = unpack('!BBHHHBBH4s4s' , ip_header)
-             
-            version_ihl = iph[0]
-            version = version_ihl >> 4
-            ihl = version_ihl & 0xF
-             
-            iph_length = ihl * 4
-             
-            ttl = iph[5]
-            protocol = iph[6]
-            s_addr = socket.inet_ntoa(iph[8]);
-            d_addr = socket.inet_ntoa(iph[9]);
-             
-            self.listbox.Append("Welcome to the Network Protocol Analyzer")
-            header = 'Version : ' + str(version) + ' IP Header Length : ' + str(ihl) + ' TTL : ' + str(ttl) + ' Protocol : ' + str(protocol) + ' Source Address : ' + str(s_addr) + ' Destination Address : ' + str(d_addr)
-            self.listbox.Append(header)
-             
-            tcp_header = packet[iph_length:iph_length+20]
-             
-            #now unpack them :)
-            tcph = unpack('!HHLLBBHHH' , tcp_header)
-             
-            source_port = tcph[0]
-            dest_port = tcph[1]
-            sequence = tcph[2]
-            acknowledgement = tcph[3]
-            doff_reserved = tcph[4]
-            tcph_length = doff_reserved >> 4
-             
-            port_info = 'Source Port : ' + str(source_port) + ' Dest Port : ' + str(dest_port) + ' Sequence Number : ' + str(sequence) + ' Acknowledgement : ' + str(acknowledgement) + ' TCP header length : ' + str(tcph_length)
-            self.listbox.Append(port_info)
-             
-            h_size = iph_length + tcph_length * 4
-            data_size = len(packet) - h_size
-             
-            #get data from the packet
-            data = packet[h_size:]
-            string_data = binascii.b2a_uu(data)
-            self.listbox.Append('Data : ' + string_data)
-            self.listbox.Append(' ')
+        self.listbox.Append("Welcome to the Network Protocol Analyzer")
+        string = sniff(prn=lambda x: x.summary(),count=30)
+        capture = StringIO()
+        save_stdout = sys.stdout
+        sys.stdout = capture
+        string.show()
+        sys.stdout = save_stdout
+        self.listbox.Append(capture.getvalue())
+        self.listbox.Append(' ')
+            
+            
 
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
