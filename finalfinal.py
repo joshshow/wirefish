@@ -5,6 +5,7 @@
 #
 
 import wx
+import threading
 import socket, sys
 from struct import *
 from scapy.all import *
@@ -16,9 +17,23 @@ import gettext
 # begin wxGlade: extracode
 # end wxGlade
 
+packetNum = 5
+
+class StartThread(threading.Thread):
+  def __init__(self,ref):
+        threading.Thread.__init__(self)
+        self.ref = ref
+  
+  def run(self):
+	pass
+        
+  def sniff(self):
+	global packetNum
+	string = sniff(prn=lambda x: x.summary(),count=int(packetNum))
+	return string
 
 class MyFrame(wx.Frame):
-    packetNum = 5
+    #packetNum = 5
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -68,9 +83,11 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
     def startAnalyzer(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.captureList.Append("\nCapturing packets...")
-	       
-	string = sniff(prn=lambda x: x.summary(),count=int(self.packetNum))
+        startthread = StartThread(self)
+        startthread.start()
+	#self.captureList.Append("\nCapturing packets...")
+	string = startthread.sniff()
+	
         capture = StringIO()
         save_stdout = sys.stdout
         sys.stdout = capture
@@ -81,18 +98,12 @@ class MyFrame(wx.Frame):
             
 
     def getTextEnter(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.captureList.Append("\nCapturing packets...")
-	       
-	string = sniff(prn=lambda x: x.summary(),count=int(self.packetNum))
-        capture = StringIO()
-        save_stdout = sys.stdout
-        sys.stdout = capture
-        string.show()
-        sys.stdout = save_stdout
-        self.captureList.Append(capture.getvalue())
-        self.captureList.Append(' ')
+        startthread = StartThread(self)
+        startthread.start()
+
     def getText(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.packetNum = self.captureNum.GetLineText(0)
+	global packetNum
+        packetNum = self.captureNum.GetLineText(0)
 	
         
 
