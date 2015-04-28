@@ -18,6 +18,7 @@ import gettext
 
 
 class MyFrame(wx.Frame):
+    packetNum = 5
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -35,6 +36,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_TEXT_ENTER, self.getTextEnter, self.captureNum)
         self.Bind(wx.EVT_TEXT, self.getText, self.captureNum)
         self.Bind(wx.EVT_LISTBOX, self.listboxShow, self.captureList)
+        self.captureList.Append("Welcome to the Network Protocol Analyzer")
         # end wxGlade
 
     def __set_properties(self):
@@ -66,24 +68,32 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
     def startAnalyzer(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.listbox.Append("Welcome to the Network Protocol Analyzer")
-                   
-        string = sniff(prn=lambda x: x.summary(),count=30)
+        self.captureList.Append("\nCapturing packets...")
+	print(self.packetNum)        
+	string = sniff(prn=lambda x: x.summary(),count=int(self.packetNum))
         capture = StringIO()
         save_stdout = sys.stdout
         sys.stdout = capture
         string.show()
         sys.stdout = save_stdout
-        self.listbox.Append(capture.getvalue())
-        self.listbox.Append(' ')
+        self.captureList.Append(capture.getvalue())
+        self.captureList.Append(' ')
             
 
     def getTextEnter(self, event):  # wxGlade: MyFrame.<event_handler>
-        print "Event handler 'getTextEnter' not implemented!"
-        event.Skip()
-
+        self.captureList.Append("\nCapturing packets...")
+               
+        string = sniff(prn=lambda x: x.summary(),count=int(self.packetNum))
+        capture = StringIO()
+        save_stdout = sys.stdout
+        sys.stdout = capture
+        string.show()
+        sys.stdout = save_stdout
+        self.captureList.Append(capture.getvalue())
+        self.captureList.Append(' ')
     def getText(self, event):  # wxGlade: MyFrame.<event_handler>
-        packetNum = wxTextCtrl.GetLineText()
+        self.packetNum = self.captureNum.GetLineText(0)
+	print(self.packetNum)
         
 
     def listboxShow(self, event):  # wxGlade: MyFrame.<event_handler>
