@@ -69,7 +69,7 @@ class MyFrame(wx.Frame):
 
     def startAnalyzer(self, event):  # wxGlade: MyFrame.<event_handler>
         self.captureList.Append("\nCapturing packets...")
-	print(self.packetNum)        
+	       
 	string = sniff(prn=lambda x: x.summary(),count=int(self.packetNum))
         capture = StringIO()
         save_stdout = sys.stdout
@@ -82,8 +82,8 @@ class MyFrame(wx.Frame):
 
     def getTextEnter(self, event):  # wxGlade: MyFrame.<event_handler>
         self.captureList.Append("\nCapturing packets...")
-               
-        string = sniff(prn=lambda x: x.summary(),count=int(self.packetNum))
+	       
+	string = sniff(prn=lambda x: x.summary(),count=int(self.packetNum))
         capture = StringIO()
         save_stdout = sys.stdout
         sys.stdout = capture
@@ -93,11 +93,11 @@ class MyFrame(wx.Frame):
         self.captureList.Append(' ')
     def getText(self, event):  # wxGlade: MyFrame.<event_handler>
         self.packetNum = self.captureNum.GetLineText(0)
-	print(self.packetNum)
+	
         
 
     def listboxShow(self, event):  # wxGlade: MyFrame.<event_handler>
-        print "Event handler 'listboxShow' not implemented!"
+        #print "Event handler 'listboxShow' not implemented!"
         event.Skip()
 
 # end of class MyFrame
