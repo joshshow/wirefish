@@ -5,7 +5,10 @@
 #
 
 import wx
-
+import socket, sys
+from struct import *
+from scapy.all import *
+from StringIO import StringIO
 # begin wxGlade: dependencies
 import gettext
 # end wxGlade
@@ -63,16 +66,25 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
     def startAnalyzer(self, event):  # wxGlade: MyFrame.<event_handler>
-        print "Event handler 'startAnalyzer' not implemented!"
-        event.Skip()
+        self.listbox.Append("Welcome to the Network Protocol Analyzer")
+                   
+        string = sniff(prn=lambda x: x.summary(),count=30)
+        capture = StringIO()
+        save_stdout = sys.stdout
+        sys.stdout = capture
+        string.show()
+        sys.stdout = save_stdout
+        self.listbox.Append(capture.getvalue())
+        self.listbox.Append(' ')
+            
 
     def getTextEnter(self, event):  # wxGlade: MyFrame.<event_handler>
         print "Event handler 'getTextEnter' not implemented!"
         event.Skip()
 
     def getText(self, event):  # wxGlade: MyFrame.<event_handler>
-        print "Event handler 'getText' not implemented!"
-        event.Skip()
+        packetNum = wxTextCtrl.GetLineText()
+        
 
     def listboxShow(self, event):  # wxGlade: MyFrame.<event_handler>
         print "Event handler 'listboxShow' not implemented!"
